@@ -9,5 +9,5 @@ find_package(Threads REQUIRED)
 # Enable ExternalProject CMake module
 include(ExternalProject)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES avltree/main.cpp)
 add_executable(AVLTree ${SOURCE_FILES})
