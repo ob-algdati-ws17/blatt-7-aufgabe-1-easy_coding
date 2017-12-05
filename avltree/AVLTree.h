@@ -3,23 +3,31 @@
 
 class AVLTree {
 private:
-    class Node {
-    private:
+    struct Node {
         const int key;
+        int bal = 0;
         Node *left = nullptr;
         Node *right = nullptr;
-    public:
-        Node(const int);
+        Node *previous = nullptr;
+
+        ~Node();
+
+        Node(int value);
+
+        Node(int value, Node *l, Node *r);
+
     };
+
+    Node *root = nullptr;
 
 public:
     ~AVLTree();
 
-    bool insert(const int);
+    bool insert(int value);
 
-    bool remove(const int);
+    bool remove(int value);
 
-    bool search(const int);
+    bool search(int value);
 
 };
 

@@ -3,6 +3,8 @@ project(AVLTree)
 
 set(CMAKE_CXX_STANDARD 11)
 
+add_subdirectory(avltree)
+
 # GoogleTest
 
 # We need thread support

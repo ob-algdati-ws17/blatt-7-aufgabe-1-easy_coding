@@ -1,7 +1,3 @@
-//
-// Created by mark on 05.12.2017.
-//
-
 #ifndef AVLTREE_TESTAVLTREE_H
 #define AVLTREE_TESTAVLTREE_H
 
