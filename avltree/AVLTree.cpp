@@ -15,9 +15,7 @@ AVLTree::Node::Node(int const value, AVLTree::Node *l, AVLTree::Node *r)
 
 AVLTree::Node::~Node() {
     cout << "Node destructor" << endl;
-
 }
-
 
 AVLTree::~AVLTree() {
     cout << "Tree destructor" << endl;
@@ -36,5 +34,29 @@ bool AVLTree::remove(const int value) {
 
 bool AVLTree::search(const int value) {
     cout << "Tree search" << endl;
-    return false;
+
+    if(root == nullptr){
+        return false;
+    }
+
+    auto current = root;
+
+    while (true) {
+        if (current->key == value) {
+            return true;
+        }
+        if (value < current->key) {
+            if (current->left != nullptr) {
+                current = current->left;
+            } else {
+                return false;
+            }
+        } else {
+            if (current->right != nullptr) {
+                current = current->right;
+            } else {
+                return false;
+            }
+        }
+    }
 }
