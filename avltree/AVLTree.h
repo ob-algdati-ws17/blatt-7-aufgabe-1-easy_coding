@@ -29,6 +29,12 @@ public:
 
     bool search(int value);
 
+    void upin(Node *node);
+
+    void rotateLeft(Node *node);
+
+    void rotateRight(Node *node);
+
 };
 
 #endif //AVLTREE_AVLTREE_H
