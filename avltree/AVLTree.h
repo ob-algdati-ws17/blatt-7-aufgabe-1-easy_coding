@@ -1,6 +1,11 @@
 #ifndef AVLTREE_AVLTREE_H
 #define AVLTREE_AVLTREE_H
 
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
 class AVLTree {
 private:
     struct Node {
@@ -16,6 +21,7 @@ private:
 
         Node(int value, Node *l, Node *r);
 
+        vector<int> *inorder() const;   // (Symmetrische Reihenfolge)
     };
 
     Node *root = nullptr;
@@ -35,6 +41,13 @@ public:
 
     void rotateRight(Node *node);
 
+    void rotateLeftRight(Node *node);
+
+    void rotateRightLeft(Node *node);
+
+    bool isEmpty();
+
+    vector<int> *inorder() const;   // (Symmetrische Reihenfolge)
 };
 
 #endif //AVLTREE_AVLTREE_H
