@@ -65,7 +65,172 @@ bool AVLTree::insert(const int value) {
 
 bool AVLTree::remove(const int value) {
     cout << "Tree remove" << endl;
+
+    if (root == nullptr) {
+        return false;
+    }
+
+    auto current = root;
+
+    while (true) {
+        if (current->key == value) {
+            break;
+        }
+        if (value < current->key) {
+            if (current->left != nullptr) {
+                current = current->left;
+            } else {
+                return false;
+            }
+        } else {
+            if (current->right != nullptr) {
+                current = current->right;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    if (current == root) {
+        root = nullptr;
+        delete current;
+        return true;
+    }
+
+    if (current->left == nullptr && current->right == nullptr) {
+        // löschen ohne nachfolger
+        deleteWithoutChild(current);
+    } else if (current->left == nullptr || current->right == nullptr) {
+        // löschen mit einem nachfolger
+        deleteWithOneChild(current);
+    } else if (current->left != nullptr && current->right != nullptr) {
+        // löschen mit zwei nachfolgern
+        deleteWithTwoChild(current);
+    }
+
     return false;
+}
+
+
+void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
+    if (node == root) {
+        root = nullptr;
+        delete node;
+        return;
+    }
+
+    // falls links
+    if (node->previous->left == node) {
+        node->previous->left = nullptr;
+        // balance was -1 is now 0
+        if (node->previous->bal == -1) {
+            node->previous->bal = 0;
+            upout(node->previous);
+            // balance was 0 is now 1
+        } else if (node->previous->bal == 0) {
+            node->previous->bal = 1;
+            // balance was 1 is now 2
+        } else if (node->previous->bal == 1) {
+            if (node->previous->right->bal == 1) {
+                rotateLeft(node->previous);
+            } else {
+                rotateRightLeft(node->previous);
+            }
+        }
+    } else {
+        // falls rechts
+        node->previous->right = nullptr;
+        // balance was 1 is now 0
+        if (node->previous->bal == 1) {
+            node->previous->bal = 0;
+            upout(node->previous);
+            // balance was 0 is now -1
+        } else if (node->previous->bal == 0) {
+            node->previous->bal = -1;
+            // balance was -1 is now -2
+        } else if (node->previous->bal == -1) {
+            if (node->previous->left->bal == -1) {
+                rotateRight(node->previous);
+            } else {
+                rotateLeftRight(node->previous);
+            }
+        }
+    }
+
+    delete node;
+}
+
+void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
+
+}
+
+void AVLTree::deleteWithTwoChild(AVLTree::Node *node) {
+
+}
+
+void AVLTree::upout(AVLTree::Node *node) {
+    if(node == root){
+        return;
+    }
+    // wenn linker nachfolger
+    if (node == node->previous->left) {
+        if (node->previous->bal == -1) {
+            node->previous->bal = 0;
+            upout(node->previous);
+            return;
+        } else if (node->previous->bal == 0){
+            node->previous->bal = 1;
+            return;
+        } else {
+            if(node->previous->right->bal == 0){
+                rotateLeft(node->previous);
+                node->bal = 0;
+                node->previous->bal = 1;
+                node->previous->previous->bal = -1;
+            } else if(node->previous->right->bal == 1){
+                rotateLeft(node->previous);
+                node->bal = 0;
+                node->previous->bal = 0;
+                node->previous->previous->bal = 0;
+                upout(node->previous->previous);
+            } else {
+                int saveBalance = node->previous->right->left->bal;
+                rotateRightLeft(node->previous);
+                upout(node->previous->previous);
+                node->bal = 0;
+                //toDO
+            }
+        }
+    } else{
+        if(node->previous->bal == 1){
+            node->previous->bal = 0;
+            upout(node->previous);
+            return;
+        } else if(node->previous->bal == 0){
+            node->previous->bal = -1;
+            return;
+        }else {
+            if (node->previous->left->bal == 0){
+                rotateRight(node->previous);
+                node->bal = 0;
+                node->previous->bal = -1;
+                node->previous->previous->bal = 1;
+            } else if(node->previous->left->bal == -1){
+                rotateRight(node->previous);
+                node->bal = 0;
+                node->previous->bal = 0;
+                node->previous->previous->bal = 0;
+                upout(node->previous->previous);
+            } else{
+                int saveBalance = node->previous->left->right->bal;
+                rotateLeftRight(node->previous);
+                upout(node->previous->previous);
+                node->bal = 0;
+                // toDo
+            }
+        }
+    }
+
 }
 
 bool AVLTree::search(const int value) {
@@ -222,6 +387,29 @@ bool AVLTree::isEmpty() {
     return root == nullptr;
 }
 
+vector<int> *AVLTree::preorder() const {
+    if (root == nullptr)
+        return nullptr;
+    return root->preorder();
+}
+
+vector<int> *AVLTree::Node::preorder() const {
+    auto vec = new vector<int>();
+    // Wurzel in vec
+    vec->push_back(key);
+    // linken Nachfolger in vec
+    if (left != nullptr) {
+        auto left_vec = left->preorder();
+        vec->insert(vec->end(), left_vec->begin(), left_vec->end());
+    }
+    // rechten Nachfolger in vec
+    if (right != nullptr) {
+        auto right_vec = right->preorder();
+        vec->insert(vec->end(), right_vec->begin(), right_vec->end());
+    }
+    return vec;
+}
+
 vector<int> *AVLTree::inorder() const {
     if (root == nullptr)
         return nullptr;
@@ -244,6 +432,30 @@ vector<int> *AVLTree::Node::inorder() const {
     }
     return vec;
 }
+
+vector<int> *AVLTree::postorder() const {
+    if (root == nullptr)
+        return nullptr;
+    return root->postorder();
+}
+
+vector<int> *AVLTree::Node::postorder() const {
+    auto vec = new vector<int>();
+    // linken Nachfolger in vec
+    if (left != nullptr) {
+        auto left_vec = left->postorder();
+        vec->insert(vec->end(), left_vec->begin(), left_vec->end());
+    }
+    // rechten Nachfolger in vec
+    if (right != nullptr) {
+        auto right_vec = right->postorder();
+        vec->insert(vec->end(), right_vec->begin(), right_vec->end());
+    }
+    // Wurzel in vec
+    vec->push_back(key);
+    return vec;
+}
+
 
 
 
