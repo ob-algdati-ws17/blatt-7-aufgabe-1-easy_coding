@@ -225,18 +225,58 @@ TEST(AVLTreeTest, Test_Remove_Without_Child_Critical) {
 
 
 
-//TEST(AVLTreeTest, Test_Remove_With_One_Child_Left) {
-//    AVLTree tree;
-//    tree.insert(10);
-//    tree.insert(20);
-//    tree.insert(30);
-//    tree.insert(25);
-//    tree.remove(30);
-//    EXPECT_FALSE(tree.isEmpty());
-//    EXPECT_THAT(*tree.inorder(), testing::ElementsAre(10, 20, 25));
-//    EXPECT_THAT(*tree.preorder(), testing::ElementsAre(20, 10, 25));
-//    EXPECT_THAT(*tree.postorder(), testing::ElementsAre(10, 25, 20));
-//}
+TEST(AVLTreeTest, Test_Remove_With_One_Child_Right_Left) {
+    AVLTree tree;
+    tree.insert(10);
+    tree.insert(20);
+    tree.insert(30);
+    tree.insert(25);
+    tree.remove(30);
+    EXPECT_FALSE(tree.isEmpty());
+    EXPECT_THAT(*tree.inorder(), testing::ElementsAre(10, 20, 25));
+    EXPECT_THAT(*tree.preorder(), testing::ElementsAre(20, 10, 25));
+    EXPECT_THAT(*tree.postorder(), testing::ElementsAre(10, 25, 20));
+}
+
+TEST(AVLTreeTest, Test_Remove_With_One_Child_Right_Right) {
+    AVLTree tree;
+    tree.insert(10);
+    tree.insert(20);
+    tree.insert(30);
+    tree.insert(35);
+    tree.remove(30);
+    EXPECT_FALSE(tree.isEmpty());
+    EXPECT_THAT(*tree.inorder(), testing::ElementsAre(10, 20, 35));
+    EXPECT_THAT(*tree.preorder(), testing::ElementsAre(20, 10, 35));
+    EXPECT_THAT(*tree.postorder(), testing::ElementsAre(10, 35, 20));
+}
+
+TEST(AVLTreeTest, Test_Remove_With_One_Child_Left_Left) {
+    AVLTree tree;
+    tree.insert(10);
+    tree.insert(20);
+    tree.insert(30);
+    tree.insert(5);
+    tree.remove(10);
+    EXPECT_FALSE(tree.isEmpty());
+    EXPECT_THAT(*tree.inorder(), testing::ElementsAre(5, 20, 30));
+    EXPECT_THAT(*tree.preorder(), testing::ElementsAre(20, 5, 30));
+    EXPECT_THAT(*tree.postorder(), testing::ElementsAre(5, 30, 20));
+}
+
+TEST(AVLTreeTest, Test_Remove_With_One_Child_Left_Right) {
+    AVLTree tree;
+    tree.insert(10);
+    tree.insert(20);
+    tree.insert(30);
+    tree.insert(15);
+    tree.remove(10);
+    EXPECT_FALSE(tree.isEmpty());
+    EXPECT_THAT(*tree.inorder(), testing::ElementsAre(15, 20, 30));
+    EXPECT_THAT(*tree.preorder(), testing::ElementsAre(20, 15, 30));
+    EXPECT_THAT(*tree.postorder(), testing::ElementsAre(15, 30, 20));
+}
+
 //
 //
 //TEST(AVLTreeTest, Test_Remove_With_Two_Childs) {

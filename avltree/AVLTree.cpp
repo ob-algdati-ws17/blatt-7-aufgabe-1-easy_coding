@@ -100,7 +100,8 @@ bool AVLTree::remove(const int value) {
     if (current->left == nullptr && current->right == nullptr) {
         // löschen ohne nachfolger
         deleteWithoutChild(current);
-    } else if (current->left == nullptr || current->right == nullptr) {
+    } else if (current->left == nullptr && current->right != nullptr ||
+            current->left != nullptr && current->right == nullptr) {
         // löschen mit einem nachfolger
         deleteWithOneChild(current);
     } else if (current->left != nullptr && current->right != nullptr) {
@@ -161,6 +162,30 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
 }
 
 void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
+
+    if (node->left != nullptr){
+        auto child = node->left;
+        node->key = child->key;
+        node->right = nullptr;
+        node->left = nullptr;
+        node->bal = 0;
+        if(node->previous){
+            upout(node);
+        }
+        delete child;
+
+    } else {
+        auto child = node->right;
+        node->key = child->key;
+        node->right = nullptr;
+        node->left = nullptr;
+        node->bal = 0;
+        if(node->previous){
+            upout(node);
+        }
+        delete child;
+    }
+
 
 
 

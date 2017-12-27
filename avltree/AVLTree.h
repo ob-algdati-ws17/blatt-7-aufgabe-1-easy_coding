@@ -9,7 +9,7 @@ using namespace std;
 class AVLTree {
 private:
     struct Node {
-        const int key;
+        int key;
         int bal = 0;
         Node *left = nullptr;
         Node *right = nullptr;
