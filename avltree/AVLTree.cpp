@@ -162,6 +162,8 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
 
 void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
 
+
+
 }
 
 void AVLTree::deleteWithTwoChild(AVLTree::Node *node) {
@@ -196,9 +198,18 @@ void AVLTree::upout(AVLTree::Node *node) {
             } else {
                 int saveBalance = node->previous->right->left->bal;
                 rotateRightLeft(node->previous);
-                upout(node->previous->previous);
-                node->bal = 0;
-                //toDO
+                auto root = node->previous->previous;
+                root->bal = 0;
+                root->left->left->bal = 0;
+                root->left->bal = 0;
+                root->right->bal = 0;
+                if (saveBalance == 1) {
+                    root->left->bal = -1;
+                } else if (saveBalance == -1) {
+                    root->right->bal = 1;
+                }
+                upout(root);
+
             }
         }
     } else{
@@ -224,9 +235,17 @@ void AVLTree::upout(AVLTree::Node *node) {
             } else{
                 int saveBalance = node->previous->left->right->bal;
                 rotateLeftRight(node->previous);
-                upout(node->previous->previous);
-                node->bal = 0;
-                // toDo
+                auto root = node->previous->previous;
+                root->bal = 0;
+                root->right->right->bal = 0;
+                root->left->bal = 0;
+                root->right->bal = 0;
+                if (saveBalance == 1) {
+                    root->left->bal = -1;
+                } else if (saveBalance == -1) {
+                    root->right->bal = 1;
+                }
+                upout(root);
             }
         }
     }
@@ -335,9 +354,9 @@ void AVLTree::rotateLeft(AVLTree::Node *node) {
     helperNodeR->left = node;
     node->previous = helperNodeR;
     node->right = helperNodeRL;
-//    if (helperNodeRL) {
-//        helperNodeRL->previous = node;
-//    }
+    if (helperNodeRL) {
+        helperNodeRL->previous = node;
+    }
     node->bal = 0;
     helperNodeR->bal = 0;
 }
@@ -362,9 +381,9 @@ void AVLTree::rotateRight(AVLTree::Node *node) {
     helperNodeL->right = node;
     node->previous = helperNodeL;
     node->left = helperNodeLR;
-//    if (helperNodeLR) {
-//        helperNodeLR->previous = node;
-//    }
+    if (helperNodeLR) {
+        helperNodeLR->previous = node;
+    }
     node->bal = 0;
     helperNodeL->bal = 0;
 
