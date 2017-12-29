@@ -4,8 +4,6 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 class AVLTree {
 private:
     struct Node {
@@ -19,13 +17,13 @@ private:
 
         Node(int value);
 
-        vector<int> *preorder() const;
+        std::vector<int> *preorder() const;
 
-        vector<int> *inorder() const;
+        std::vector<int> *inorder() const;
 
-        vector<int> *postorder() const;
+        std::vector<int> *postorder() const;
 
-        vector<int> *inorderBalance() const;
+        std::vector<int> *inorderBalance() const;
     };
 
     Node *root = nullptr;
@@ -59,13 +57,13 @@ public:
 
     bool isEmpty();
 
-    vector<int> *preorder() const;
+    std::vector<int> *preorder() const;
 
-    vector<int> *inorder() const;
+    std::vector<int> *inorder() const;
 
-    vector<int> *postorder() const;
+    std::vector<int> *postorder() const;
 
-    vector<int> *inorderBalance() const;
+    std::vector<int> *inorderBalance() const;
 };
 
 #endif //AVLTREE_AVLTREE_H

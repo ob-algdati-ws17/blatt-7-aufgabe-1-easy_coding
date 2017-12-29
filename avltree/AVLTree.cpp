@@ -3,23 +3,18 @@
 using namespace std;
 
 AVLTree::Node::Node(int const value) : key(value) {
-    cout << "Node constructor 1" << endl;
 }
 
 AVLTree::Node::~Node() {
-    cout << "Node destructor" << endl;
     delete left;
     delete right;
 }
 
 AVLTree::~AVLTree() {
-    cout << "Tree destructor" << endl;
-
     delete root;
 }
 
 bool AVLTree::insert(const int value) {
-    cout << "Tree insert" << endl;
     auto toInsert = new Node(value);
 
     if (root == nullptr) {
@@ -42,7 +37,6 @@ bool AVLTree::insert(const int value) {
                 if (current->bal != 0) {
                     upin(current); // fixing balance
                 }
-                //toDo fehler hier nicht immer aufrufen!!!!!!!!
                 return true;
             }
             current = current->left;
@@ -55,7 +49,6 @@ bool AVLTree::insert(const int value) {
                 if (current->bal != 0) {
                     upin(current); // fixing balance
                 }
-                //toDo fehler hier nicht immer aufrufen!!!!!!!!
                 return true;
             }
             current = current->right;
@@ -64,8 +57,6 @@ bool AVLTree::insert(const int value) {
 }
 
 bool AVLTree::remove(const int value) {
-    cout << "Tree remove" << endl;
-
     if (root == nullptr) {
         return false;
     }
@@ -98,14 +89,14 @@ bool AVLTree::remove(const int value) {
     }
 
     if (current->left == nullptr && current->right == nullptr) {
-        // löschen ohne nachfolger
+        // Deletion without successor
         deleteWithoutChild(current);
     } else if (current->left == nullptr && current->right != nullptr ||
                current->left != nullptr && current->right == nullptr) {
-        // löschen mit einem nachfolger
+        // Deletion with one successor
         deleteWithOneChild(current);
     } else if (current->left != nullptr && current->right != nullptr) {
-        // löschen mit zwei nachfolgern
+        // Deletetion with two successors
         deleteWithTwoChild(current);
     }
 
@@ -119,7 +110,7 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
         return;
     }
 
-    // falls links
+    // left
     if (node->previous->left == node) {
         node->previous->left = nullptr;
         // balance was -1 is now 0
@@ -138,7 +129,7 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
             }
         }
     } else {
-        // falls rechts
+        // right
         node->previous->right = nullptr;
         // balance was 1 is now 0
         if (node->previous->bal == 1) {
@@ -162,24 +153,27 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
 
 void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
 
+    // child left
     if (node->left != nullptr) {
         auto child = node->left;
         node->key = child->key;
         node->right = nullptr;
         node->left = nullptr;
         node->bal = 0;
-        if (node->previous) {
+        if (node->previous != nullptr) {
             upout(node);
         }
         delete child;
 
     } else {
+
+        // child right
         auto child = node->right;
         node->key = child->key;
         node->right = nullptr;
         node->left = nullptr;
         node->bal = 0;
-        if (node->previous) {
+        if (node->previous != nullptr) {
             upout(node);
         }
         delete child;
@@ -190,13 +184,17 @@ void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
 
 void AVLTree::deleteWithTwoChild(AVLTree::Node *node) {
 
+    // find a replacement
     auto sym = node->left;
     while (sym->right != nullptr) {
         sym = sym->right;
     }
+    // switch keys
     int nodeKey = node->key;
     node->key = sym->key;
     sym->key = nodeKey;
+
+    // delete switched node
     if (sym->right == nullptr && sym->left == nullptr) {
         deleteWithoutChild(sym);
     } else {
@@ -209,7 +207,7 @@ void AVLTree::upout(AVLTree::Node *node) {
     if (node == root) {
         return;
     }
-    // wenn linker nachfolger
+    // left successor
     if (node == node->previous->left) {
         if (node->previous->bal == -1) {
             node->previous->bal = 0;
@@ -248,6 +246,7 @@ void AVLTree::upout(AVLTree::Node *node) {
             }
         }
     } else {
+        // right successor
         if (node->previous->bal == 1) {
             node->previous->bal = 0;
             upout(node->previous);
@@ -288,7 +287,6 @@ void AVLTree::upout(AVLTree::Node *node) {
 }
 
 bool AVLTree::search(const int value) {
-    cout << "Tree search" << endl;
 
     if (root == nullptr) {
         return false;
@@ -369,7 +367,6 @@ void AVLTree::upin(AVLTree::Node *node) {
     }
 }
 
-
 void AVLTree::rotateLeft(AVLTree::Node *node) {
     auto helperNodeRL = node->right->left;
     auto helperNodeR = node->right;
@@ -391,7 +388,7 @@ void AVLTree::rotateLeft(AVLTree::Node *node) {
     helperNodeR->left = node;
     node->previous = helperNodeR;
     node->right = helperNodeRL;
-    if (helperNodeRL) {
+    if (helperNodeRL != nullptr) {
         helperNodeRL->previous = node;
     }
     node->bal = 0;
@@ -418,7 +415,7 @@ void AVLTree::rotateRight(AVLTree::Node *node) {
     helperNodeL->right = node;
     node->previous = helperNodeL;
     node->left = helperNodeLR;
-    if (helperNodeLR) {
+    if (helperNodeLR != nullptr) {
         helperNodeLR->previous = node;
     }
     node->bal = 0;
@@ -427,14 +424,11 @@ void AVLTree::rotateRight(AVLTree::Node *node) {
 }
 
 void AVLTree::rotateLeftRight(AVLTree::Node *node) {
-    cout << "rotate left right" << endl;
     rotateLeft(node->left);
     rotateRight(node);
-
 }
 
 void AVLTree::rotateRightLeft(AVLTree::Node *node) {
-    cout << "rotate right left" << endl;
     rotateRight(node->right);
     rotateLeft(node);
 }
