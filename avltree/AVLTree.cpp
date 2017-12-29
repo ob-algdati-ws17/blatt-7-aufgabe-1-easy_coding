@@ -1,27 +1,21 @@
 #include "AVLTree.h"
-#include <functional>
-#include <vector>
-#include <iostream>
 
 using namespace std;
 
-AVLTree::Node::Node(int const value)
-        : key(value) {
+AVLTree::Node::Node(int const value) : key(value) {
     cout << "Node constructor 1" << endl;
-}
-
-AVLTree::Node::Node(int const value, AVLTree::Node *l, AVLTree::Node *r)
-        : key(value), left(l), right(r) {
-    cout << "Node constructor 2" << endl;
 }
 
 AVLTree::Node::~Node() {
     cout << "Node destructor" << endl;
+    delete left;
+    delete right;
 }
 
 AVLTree::~AVLTree() {
     cout << "Tree destructor" << endl;
 
+    delete root;
 }
 
 bool AVLTree::insert(const int value) {
@@ -45,7 +39,10 @@ bool AVLTree::insert(const int value) {
                 current->left = toInsert;
                 current->left->previous = current;
                 current->bal--;
-                upin(current); // fixing balance
+                if (current->bal != 0) {
+                    upin(current); // fixing balance
+                }
+                //toDo fehler hier nicht immer aufrufen!!!!!!!!
                 return true;
             }
             current = current->left;
@@ -55,7 +52,10 @@ bool AVLTree::insert(const int value) {
                 current->right = toInsert;
                 current->right->previous = current;
                 current->bal++;
-                upin(current); // fixing balance
+                if (current->bal != 0) {
+                    upin(current); // fixing balance
+                }
+                //toDo fehler hier nicht immer aufrufen!!!!!!!!
                 return true;
             }
             current = current->right;
@@ -91,7 +91,7 @@ bool AVLTree::remove(const int value) {
         }
     }
 
-    if (current == root) {
+    if (current == root && current->left == nullptr && current->right == nullptr) {
         root = nullptr;
         delete current;
         return true;
@@ -101,7 +101,7 @@ bool AVLTree::remove(const int value) {
         // löschen ohne nachfolger
         deleteWithoutChild(current);
     } else if (current->left == nullptr && current->right != nullptr ||
-            current->left != nullptr && current->right == nullptr) {
+               current->left != nullptr && current->right == nullptr) {
         // löschen mit einem nachfolger
         deleteWithOneChild(current);
     } else if (current->left != nullptr && current->right != nullptr) {
@@ -111,7 +111,6 @@ bool AVLTree::remove(const int value) {
 
     return false;
 }
-
 
 void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
     if (node == root) {
@@ -163,13 +162,13 @@ void AVLTree::deleteWithoutChild(AVLTree::Node *node) {
 
 void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
 
-    if (node->left != nullptr){
+    if (node->left != nullptr) {
         auto child = node->left;
         node->key = child->key;
         node->right = nullptr;
         node->left = nullptr;
         node->bal = 0;
-        if(node->previous){
+        if (node->previous) {
             upout(node);
         }
         delete child;
@@ -180,23 +179,34 @@ void AVLTree::deleteWithOneChild(AVLTree::Node *node) {
         node->right = nullptr;
         node->left = nullptr;
         node->bal = 0;
-        if(node->previous){
+        if (node->previous) {
             upout(node);
         }
         delete child;
     }
 
 
-
-
 }
 
 void AVLTree::deleteWithTwoChild(AVLTree::Node *node) {
 
+    auto sym = node->left;
+    while (sym->right != nullptr) {
+        sym = sym->right;
+    }
+    int nodeKey = node->key;
+    node->key = sym->key;
+    sym->key = nodeKey;
+    if (sym->right == nullptr && sym->left == nullptr) {
+        deleteWithoutChild(sym);
+    } else {
+        deleteWithOneChild(sym);
+    }
+
 }
 
 void AVLTree::upout(AVLTree::Node *node) {
-    if(node == root){
+    if (node == root) {
         return;
     }
     // wenn linker nachfolger
@@ -205,16 +215,16 @@ void AVLTree::upout(AVLTree::Node *node) {
             node->previous->bal = 0;
             upout(node->previous);
             return;
-        } else if (node->previous->bal == 0){
+        } else if (node->previous->bal == 0) {
             node->previous->bal = 1;
             return;
         } else {
-            if(node->previous->right->bal == 0){
+            if (node->previous->right->bal == 0) {
                 rotateLeft(node->previous);
                 node->bal = 0;
                 node->previous->bal = 1;
                 node->previous->previous->bal = -1;
-            } else if(node->previous->right->bal == 1){
+            } else if (node->previous->right->bal == 1) {
                 rotateLeft(node->previous);
                 node->bal = 0;
                 node->previous->bal = 0;
@@ -237,27 +247,27 @@ void AVLTree::upout(AVLTree::Node *node) {
 
             }
         }
-    } else{
-        if(node->previous->bal == 1){
+    } else {
+        if (node->previous->bal == 1) {
             node->previous->bal = 0;
             upout(node->previous);
             return;
-        } else if(node->previous->bal == 0){
+        } else if (node->previous->bal == 0) {
             node->previous->bal = -1;
             return;
-        }else {
-            if (node->previous->left->bal == 0){
+        } else {
+            if (node->previous->left->bal == 0) {
                 rotateRight(node->previous);
                 node->bal = 0;
                 node->previous->bal = -1;
                 node->previous->previous->bal = 1;
-            } else if(node->previous->left->bal == -1){
+            } else if (node->previous->left->bal == -1) {
                 rotateRight(node->previous);
                 node->bal = 0;
                 node->previous->bal = 0;
                 node->previous->previous->bal = 0;
                 upout(node->previous->previous);
-            } else{
+            } else {
                 int saveBalance = node->previous->left->right->bal;
                 rotateLeftRight(node->previous);
                 auto root = node->previous->previous;
@@ -333,6 +343,7 @@ void AVLTree::upin(AVLTree::Node *node) {
         } else if (node->previous->bal == -1 && node->bal == 1) {
             rotateLeftRight(node->previous);
         }
+        return;
 
         // Insert to the Right
     } else if (node == node->previous->right) {
@@ -354,6 +365,7 @@ void AVLTree::upin(AVLTree::Node *node) {
         } else if (node->previous->bal == 1 && node->bal == -1) {
             rotateRightLeft(node->previous);
         }
+        return;
     }
 }
 
@@ -500,7 +512,27 @@ vector<int> *AVLTree::Node::postorder() const {
     return vec;
 }
 
+vector<int> *AVLTree::inorderBalance() const {
+    if (root == nullptr)
+        return nullptr;
+    return root->inorderBalance();
+}
 
-
+vector<int> *AVLTree::Node::inorderBalance() const {
+    auto vec = new vector<int>();
+    // linken Nachfolger in vec
+    if (left != nullptr) {
+        auto left_vec = left->inorderBalance();
+        vec->insert(vec->end(), left_vec->begin(), left_vec->end());
+    }
+    // Wurzel in vec
+    vec->push_back(bal);
+    // rechten Nachfolger in vec
+    if (right != nullptr) {
+        auto right_vec = right->inorderBalance();
+        vec->insert(vec->end(), right_vec->begin(), right_vec->end());
+    }
+    return vec;
+}
 
 

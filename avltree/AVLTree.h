@@ -19,25 +19,16 @@ private:
 
         Node(int value);
 
-        Node(int value, Node *l, Node *r);
-
         vector<int> *preorder() const;
 
         vector<int> *inorder() const;
 
         vector<int> *postorder() const;
+
+        vector<int> *inorderBalance() const;
     };
 
     Node *root = nullptr;
-
-public:
-    ~AVLTree();
-
-    bool insert(int value);
-
-    bool remove(int value);
-
-    bool search(int value);
 
     void upin(Node *node);
 
@@ -51,19 +42,30 @@ public:
 
     void rotateRightLeft(Node *node);
 
-    bool isEmpty();
-
     void deleteWithoutChild(Node *node);
 
     void deleteWithOneChild(Node *node);
 
     void deleteWithTwoChild(Node *node);
 
+public:
+    ~AVLTree();
+
+    bool insert(int value);
+
+    bool remove(int value);
+
+    bool search(int value);
+
+    bool isEmpty();
+
     vector<int> *preorder() const;
 
     vector<int> *inorder() const;
 
     vector<int> *postorder() const;
+
+    vector<int> *inorderBalance() const;
 };
 
 #endif //AVLTREE_AVLTREE_H
